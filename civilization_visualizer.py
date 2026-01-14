@@ -676,12 +676,4 @@ if __name__ == "__main__":
         
         print("可视化结果已保存：strategy_heatmap.png, evolution_curve.png, technology_progress.png, tech_tree_comparison.png, civilization_data.csv")
     except Exception as e:
-        print(f"可视化工具测试失败：{str(e)}")        visualizer.plot_tech_tree_comparison(tech_history)
-        
-        # 保存数据
-        combined_data = np.column_stack((evolution_history, resource_util))
-        visualizer.save_to_csv(combined_data)
-        
-        print("可视化结果已保存：strategy_heatmap.png, evolution_curve.png, technology_progress.png, tech_tree_comparison.png, civilization_data.csv")
-    except Exception as e:
         print(f"可视化工具测试失败：{str(e)}")

@@ -11,7 +11,7 @@ import json
 import numpy as np
 import importlib.util
 from multi_agent_simulation import MultiAgentSimulation
-from simulation_config import config as default_config
+from civsim.config import SimulationConfig
 from civilization_visualizer import CivilizationVisualizer
 
 
@@ -23,7 +23,7 @@ class SimulationCLI:
         self.simulation = None
         self.visualizer = None
         self.output_dir = "results"
-        self.config = default_config
+        self.config = SimulationConfig()
         
         # 确保输出目录存在
         if not os.path.exists(self.output_dir):
