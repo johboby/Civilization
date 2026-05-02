@@ -960,4 +960,137 @@ if (!DOM.serverUrl.value) {
     DOM.serverUrl.value = `${loc.protocol === 'https:' ? 'wss:' : 'ws:'}//${loc.host}`;
 }
 
-console.log('Civilization Online RPG Client loaded');
+// ============================================================
+// Minimap
+// ============================================================
+
+let minimapCtx = null;
+
+function initMinimap() {
+    const mc = document.getElementById('minimap');
+    if (!mc) return;
+    const container = document.getElementById('minimap-container');
+    mc.width = container.clientWidth;
+    mc.height = container.clientHeight;
+    minimapCtx = mc.getContext('2d');
+}
+
+function renderMinimap() {
+    if (!minimapCtx || !G.state) return;
+    const mc = document.getElementById('minimap');
+    const W = mc.width;
+    const H = mc.height;
+
+    minimapCtx.clearRect(0, 0, W, H);
+    minimapCtx.fillStyle = 'rgba(10,10,26,0.9)';
+    minimapCtx.fillRect(0, 0, W, H);
+
+    const provinces = G.state.provinces;
+    if (!provinces) return;
+
+    // Find map bounds
+    let maxX = 0, maxY = 0;
+    Object.values(provinces).forEach(p => {
+        maxX = Math.max(maxX, p.x);
+        maxY = Math.max(maxY, p.y);
+    });
+
+    const padX = 12, padY = 12;
+    const scaleX = (W - padX * 2) / ((maxX + 1) * 1.5);
+    const scaleY = (H - padY * 2) / ((maxY + 1) * Math.sqrt(3) * 0.5 + 1);
+    const scale = Math.min(scaleX, scaleY);
+
+    Object.values(provinces).forEach(p => {
+        const px = padX + p.x * 1.5 * scale;
+        const py = padY + (p.y + 0.5 * (p.x % 2)) * Math.sqrt(3) * 0.5 * scale;
+
+        let color = TERRAIN_COLORS[p.terrain] || '#555';
+        if (p.owner_faction_id && G.state.factions[p.owner_faction_id]) {
+            color = blendColors(color, G.state.factions[p.owner_faction_id].color, 0.5);
+        }
+
+        minimapCtx.fillStyle = color;
+        minimapCtx.beginPath();
+        minimapCtx.arc(px, py, Math.max(2, scale * 0.4), 0, Math.PI * 2);
+        minimapCtx.fill();
+
+        // Highlight selected
+        if (G.selectedProvince === p.id) {
+            minimapCtx.strokeStyle = '#f5c518';
+            minimapCtx.lineWidth = 2;
+            minimapCtx.beginPath();
+            minimapCtx.arc(px, py, Math.max(4, scale * 0.6), 0, Math.PI * 2);
+            minimapCtx.stroke();
+        }
+    });
+
+    // Draw armies as small dots
+    if (G.state.armies) {
+        Object.values(G.state.armies).forEach(a => {
+            const p = provinces[a.province_id];
+            if (!p) return;
+            const px = padX + p.x * 1.5 * scale;
+            const py = padY + (p.y + 0.5 * (p.x % 2)) * Math.sqrt(3) * 0.5 * scale;
+            const faction = G.state.factions[a.faction_id];
+            minimapCtx.fillStyle = faction ? faction.color : '#fff';
+            minimapCtx.fillRect(px - 1, py + 3, 3, 3);
+        });
+    }
+}
+
+// ============================================================
+// Notifications
+// ============================================================
+
+function showNotification(text, type = 'info') {
+    const area = document.getElementById('notification-area');
+    if (!area) return;
+
+    const div = document.createElement('div');
+    div.className = `notification ${type}`;
+
+    const icons = { info: 'i', success: '!', warning: '?', error: 'X' };
+    div.innerHTML = `<span class="notification-icon">${icons[type] || 'i'}</span><span>${escapeHtml(text)}</span>`;
+
+    area.appendChild(div);
+
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        div.classList.add('fade-out');
+        setTimeout(() => div.remove(), 300);
+    }, 4000);
+}
+
+// ============================================================
+// Enhanced Map Rendering
+// ============================================================
+
+function renderMapEnhanced() {
+    renderMap();
+    renderMinimap();
+}
+
+// Override updateAll to use enhanced rendering
+const _origUpdateAll = updateAll;
+updateAll = function() {
+    _origUpdateAll();
+    renderMinimap();
+};
+
+// ============================================================
+// Initialize
+// ============================================================
+
+// Setup minimap when game starts
+const _origShowScreen = showScreen;
+showScreen = function(name) {
+    _origShowScreen(name);
+    if (name === 'game') {
+        setTimeout(() => {
+            initMinimap();
+            renderMinimap();
+        }, 100);
+    }
+};
+
+console.log('Civilization Online RPG Client v0.2.0 loaded');
