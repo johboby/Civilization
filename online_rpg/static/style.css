@@ -1,0 +1,475 @@
+/* ============================================================
+   Civilization Online RPG - Game UI Stylesheet
+   ============================================================ */
+
+:root {
+    --bg-dark: #1a1a2e;
+    --bg-medium: #16213e;
+    --bg-light: #0f3460;
+    --bg-panel: #1e2a4a;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0b0;
+    --text-bright: #ffffff;
+    --accent-gold: #f5c518;
+    --accent-red: #e74c3c;
+    --accent-green: #2ecc71;
+    --accent-blue: #3498db;
+    --accent-purple: #9b59b6;
+    --border-color: #2a3a5e;
+    --shadow: rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+.hidden { display: none !important; }
+
+/* ---- Buttons ---- */
+.btn {
+    padding: 8px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-bright);
+    background: var(--bg-light);
+    transition: background 0.2s, transform 0.1s;
+}
+.btn:hover { background: #1a4a7a; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--accent-blue); border-color: #2980b9; }
+.btn-primary:hover { background: #2175a8; }
+.btn-success { background: var(--accent-green); border-color: #27ae60; }
+.btn-success:hover { background: #25a55a; }
+.btn-danger { background: var(--accent-red); border-color: #c0392b; }
+.btn-danger:hover { background: #c0392b; }
+.btn-secondary { background: #444; border-color: #555; }
+.btn-small { padding: 4px 10px; font-size: 12px; }
+
+/* ---- Forms ---- */
+.form-group {
+    margin-bottom: 12px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    font-size: 14px;
+}
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+/* ---- Screens ---- */
+.screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+
+/* ---- Login Screen ---- */
+#login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+.login-container {
+    background: var(--bg-panel);
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 40px var(--shadow);
+}
+.login-container h1 {
+    font-size: 28px;
+    color: var(--accent-gold);
+    margin-bottom: 8px;
+}
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+.status-text {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* ---- Lobby Screen ---- */
+.lobby-container {
+    padding: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.lobby-container h2 {
+    color: var(--accent-gold);
+    margin-bottom: 20px;
+    text-align: center;
+}
+.lobby-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+.panel {
+    background: var(--bg-panel);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.panel h3 {
+    color: var(--accent-gold);
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+.panel ul {
+    list-style: none;
+}
+.panel li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+}
+.faction-select-item {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.faction-select-item:hover { background: var(--bg-light); }
+.faction-select-item.selected { border-color: var(--accent-gold); background: var(--bg-light); }
+.faction-color-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ============================================================
+   Game Screen Layout
+   ============================================================ */
+
+#game-screen {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Top Bar ---- */
+#top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--bg-medium);
+    border-bottom: 1px solid var(--border-color);
+    height: 48px;
+    flex-shrink: 0;
+}
+.top-info, .top-resources, .top-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+.info-item {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.res-item {
+    font-size: 13px;
+    font-weight: bold;
+}
+#res-gold { color: var(--accent-gold); }
+#res-food { color: var(--accent-green); }
+#res-manpower { color: var(--accent-blue); }
+
+/* ---- Main Area ---- */
+#game-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ---- Map ---- */
+#map-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #0a0a1a;
+}
+#game-map {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ---- Side Panel ---- */
+#side-panel {
+    width: 320px;
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.tab-bar {
+    display: flex;
+    background: var(--bg-medium);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.tab {
+    flex: 1;
+    padding: 8px 4px;
+    font-size: 11px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+.tab:hover { color: var(--text-primary); }
+.tab.active {
+    color: var(--accent-gold);
+    border-bottom-color: var(--accent-gold);
+}
+.tab-content {
+    display: none;
+    padding: 12px;
+    overflow-y: auto;
+    flex: 1;
+}
+.tab-content.active { display: block; }
+.tab-content h3 {
+    color: var(--accent-gold);
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+/* Province details */
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.detail-label { color: var(--text-secondary); }
+.detail-value { color: var(--text-bright); }
+
+.stat-bar {
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    margin-top: 2px;
+    overflow: hidden;
+}
+.stat-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+/* Character cards */
+.char-card {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+.char-card .char-name {
+    font-weight: bold;
+    color: var(--accent-gold);
+    font-size: 14px;
+}
+.char-card .char-role {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+.char-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 10px;
+    margin-top: 6px;
+    font-size: 12px;
+}
+.char-stat { display: flex; justify-content: space-between; }
+
+/* Army cards */
+.army-card {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+.army-card:hover { border-color: var(--accent-blue); }
+.army-card .army-soldiers {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--accent-red);
+}
+
+/* Diplomacy items */
+.diplo-item {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+.diplo-item .diplo-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.diplo-status.neutral { background: #555; }
+.diplo-status.ally { background: var(--accent-green); color: #000; }
+.diplo-status.war { background: var(--accent-red); }
+.diplo-status.trade { background: var(--accent-gold); color: #000; }
+.diplo-status.truce { background: var(--accent-purple); }
+.diplo-status.vassal { background: #8e44ad; }
+
+.diplo-actions {
+    margin-top: 6px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+/* Tech items */
+.tech-item {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+.tech-item:hover { border-color: var(--accent-blue); }
+.tech-item .tech-name { font-weight: bold; color: var(--accent-blue); }
+.tech-item .tech-cost { font-size: 12px; color: var(--accent-gold); }
+.tech-item .tech-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.tech-item.researched { border-color: var(--accent-green); opacity: 0.7; }
+.tech-item.researching { border-color: var(--accent-gold); }
+
+/* ---- Bottom Panel ---- */
+#bottom-panel {
+    display: flex;
+    height: 160px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-medium);
+    flex-shrink: 0;
+}
+
+#event-log, #chat-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+}
+#event-log { border-right: 1px solid var(--border-color); }
+
+#event-log h4, #chat-panel h4 {
+    font-size: 12px;
+    color: var(--accent-gold);
+    margin-bottom: 6px;
+    flex-shrink: 0;
+}
+
+#event-list, #chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.6;
+}
+#event-list .event-entry {
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.event-turn { color: var(--accent-gold); font-weight: bold; }
+.event-type-battle { color: var(--accent-red); }
+.event-type-tech_researched { color: var(--accent-blue); }
+.event-type-province_captured { color: var(--accent-green); }
+
+.chat-msg { padding: 2px 0; }
+.chat-msg .chat-name { color: var(--accent-gold); font-weight: bold; }
+.chat-msg .chat-text { color: var(--text-primary); }
+
+.chat-input-row {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+.chat-input-row input {
+    flex: 1;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* ---- Scrollbars ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+/* ---- Province action buttons ---- */
+.action-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+/* ---- Tooltip ---- */
+.tooltip {
+    position: absolute;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 250px;
+    box-shadow: 0 4px 12px var(--shadow);
+}

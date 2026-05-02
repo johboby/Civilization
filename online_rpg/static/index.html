@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civilization Online RPG</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen">
+        <div class="login-container">
+            <h1>&#9876; Civilization Online RPG</h1>
+            <p class="subtitle">Grand Strategy Multiplayer Game</p>
+            <div class="form-group">
+                <label for="player-name">Player Name</label>
+                <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+            </div>
+            <div class="form-group">
+                <label for="server-url">Server Address</label>
+                <input type="text" id="server-url" placeholder="ws://localhost:8000">
+            </div>
+            <div class="form-group">
+                <label for="room-id">Room ID</label>
+                <input type="text" id="room-id" value="default" placeholder="default">
+            </div>
+            <button id="btn-connect" class="btn btn-primary">Connect to Server</button>
+            <div id="connection-status" class="status-text"></div>
+        </div>
+    </div>
+
+    <!-- Lobby Screen -->
+    <div id="lobby-screen" class="screen hidden">
+        <div class="lobby-container">
+            <h2>Game Lobby</h2>
+            <div class="lobby-panels">
+                <div class="panel">
+                    <h3>Players Online</h3>
+                    <ul id="player-list"></ul>
+                </div>
+                <div class="panel">
+                    <h3>Game Setup</h3>
+                    <div class="form-group">
+                        <label for="map-cols">Map Width</label>
+                        <input type="number" id="map-cols" value="10" min="5" max="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="map-rows">Map Height</label>
+                        <input type="number" id="map-rows" value="8" min="5" max="15">
+                    </div>
+                    <div class="form-group">
+                        <label for="num-factions">Number of Factions</label>
+                        <input type="number" id="num-factions" value="4" min="2" max="8">
+                    </div>
+                    <button id="btn-start-game" class="btn btn-primary">Start Game</button>
+                </div>
+                <div class="panel">
+                    <h3>Faction Selection</h3>
+                    <div id="faction-select-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen hidden">
+        <!-- Top Bar -->
+        <div id="top-bar">
+            <div class="top-info">
+                <span id="info-faction" class="info-item">Faction: -</span>
+                <span id="info-turn" class="info-item">Turn: 0</span>
+                <span id="info-year" class="info-item">Year: 190</span>
+                <span id="info-season" class="info-item">Season: Spring</span>
+            </div>
+            <div class="top-resources">
+                <span id="res-gold" class="res-item">Gold: 0</span>
+                <span id="res-food" class="res-item">Food: 0</span>
+                <span id="res-manpower" class="res-item">Manpower: 0</span>
+            </div>
+            <div class="top-actions">
+                <button id="btn-end-turn" class="btn btn-success">End Turn</button>
+                <button id="btn-save" class="btn btn-secondary">Save</button>
+            </div>
+        </div>
+
+        <!-- Main Game Area -->
+        <div id="game-main">
+            <!-- Map -->
+            <div id="map-container">
+                <canvas id="game-map"></canvas>
+            </div>
+
+            <!-- Side Panel -->
+            <div id="side-panel">
+                <div class="tab-bar">
+                    <button class="tab active" data-tab="province-tab">Province</button>
+                    <button class="tab" data-tab="army-tab">Army</button>
+                    <button class="tab" data-tab="characters-tab">Officers</button>
+                    <button class="tab" data-tab="diplomacy-tab">Diplomacy</button>
+                    <button class="tab" data-tab="tech-tab">Tech</button>
+                </div>
+
+                <div id="province-tab" class="tab-content active">
+                    <h3 id="province-name">Select a province</h3>
+                    <div id="province-details"></div>
+                    <div id="province-actions"></div>
+                </div>
+
+                <div id="army-tab" class="tab-content">
+                    <h3>Armies</h3>
+                    <div id="army-list"></div>
+                    <div id="army-actions"></div>
+                </div>
+
+                <div id="characters-tab" class="tab-content">
+                    <h3>Officers</h3>
+                    <div id="character-list"></div>
+                </div>
+
+                <div id="diplomacy-tab" class="tab-content">
+                    <h3>Diplomacy</h3>
+                    <div id="diplomacy-list"></div>
+                </div>
+
+                <div id="tech-tab" class="tab-content">
+                    <h3>Technology</h3>
+                    <div id="tech-info"></div>
+                    <div id="tech-available"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Panel: Events & Chat -->
+        <div id="bottom-panel">
+            <div id="event-log">
+                <h4>Events</h4>
+                <div id="event-list"></div>
+            </div>
+            <div id="chat-panel">
+                <h4>Chat</h4>
+                <div id="chat-messages"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="chat-input" placeholder="Type a message..." maxlength="200">
+                    <button id="btn-chat-send" class="btn btn-small">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/game.js"></script>
+</body>
+</html>
