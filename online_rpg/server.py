@@ -29,6 +29,7 @@ except ImportError:
 from .game_engine import GameEngine, GameState
 from .models import DiplomacyStatus
 from .tech_tree import get_available_techs, build_tech_tree
+from .character_portraits import generate_portrait_svg
 
 logger = logging.getLogger("rpg_server")
 logging.basicConfig(level=logging.INFO)
@@ -368,6 +369,46 @@ def create_app() -> FastAPI:
             return {"ok": True, "turn": room.engine.state.turn}
         except Exception as e:
             return {"ok": False, "error": str(e)}
+
+    @app.get("/api/portrait/{character_name}")
+    async def get_portrait(character_name: str, role: str = "free",
+                           command: int = 50, force: int = 50,
+                           intelligence: int = 50, politics: int = 50,
+                           charisma: int = 50):
+        svg = generate_portrait_svg(
+            character_name, role=role,
+            command=command, force=force,
+            intelligence=intelligence, politics=politics,
+            charisma=charisma,
+        )
+        return HTMLResponse(content=svg, media_type="image/svg+xml")
+
+    @app.get("/api/rooms/{room_id}/portraits")
+    async def get_all_portraits(room_id: str, faction_id: str = ""):
+        room = get_or_create_room(room_id)
+        if not room.started:
+            return {"ok": False, "error": "Game not started"}
+        portraits = {}
+        for cid, char in room.engine.state.characters.items():
+            if faction_id and char.faction_id != faction_id:
+                continue
+            if not char.alive:
+                continue
+            s = char.stats
+            svg = generate_portrait_svg(
+                char.name, role=char.role.value,
+                command=s.command, force=s.force,
+                intelligence=s.intelligence, politics=s.politics,
+                charisma=s.charisma,
+            )
+            import base64
+            encoded = base64.b64encode(svg.encode('utf-8')).decode('ascii')
+            portraits[cid] = {
+                "name": char.name,
+                "role": char.role.value,
+                "data_uri": f"data:image/svg+xml;base64,{encoded}",
+            }
+        return {"portraits": portraits}
 
     @app.get("/api/saves")
     async def list_saves():

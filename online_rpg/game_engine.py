@@ -265,9 +265,20 @@ class GameEngine:
     # Turn Processing
     # -----------------------------------------------------------------------
 
+    def process_ai_actions(self) -> None:
+        """Let AI factions submit their actions before turn processing."""
+        if not hasattr(self, '_ai_controller'):
+            from .ai_controller import AIController
+            self._ai_controller = AIController(self)
+            self._ai_controller.initialize_personalities()
+        self._ai_controller.process_ai_turns()
+
     def process_turn(self) -> List[GameEvent]:
         """Process one game turn. Returns events generated this turn."""
         turn_events: List[GameEvent] = []
+
+        # AI factions submit actions
+        self.process_ai_actions()
 
         self.state.turn += 1
         self._advance_season()

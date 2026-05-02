@@ -437,5 +437,88 @@ class TestGameEvent:
         assert d["event_type"] == "battle"
 
 
+# ---------------------------------------------------------------------------
+# AI Controller tests
+# ---------------------------------------------------------------------------
+
+class TestAIController:
+    def test_ai_processes_without_crash(self):
+        engine = GameEngine()
+        factions = [
+            {"name": "Human", "color": "#e74c3c", "player_id": "p1"},
+            {"name": "AI Bot", "color": "#3498db", "player_id": None},
+        ]
+        engine.new_game(factions, map_cols=5, map_rows=4, seed=42)
+        # Process several turns with AI
+        for _ in range(10):
+            events = engine.process_turn()
+            assert isinstance(events, list)
+
+    def test_ai_submits_actions(self):
+        engine = GameEngine()
+        factions = [
+            {"name": "Human", "color": "#e74c3c", "player_id": "p1"},
+            {"name": "AI 1", "color": "#3498db", "player_id": None},
+            {"name": "AI 2", "color": "#2ecc71", "player_id": None},
+        ]
+        engine.new_game(factions, map_cols=5, map_rows=4, seed=42)
+        # AI should have submitted actions
+        engine.process_ai_actions()
+        # Check pending actions exist for AI factions
+        ai_fids = [fid for fid, f in engine.state.factions.items() if f.player_id is None]
+        has_actions = any(fid in engine.state.pending_actions for fid in ai_fids)
+        assert has_actions
+
+    def test_ai_multiple_turns_stability(self):
+        """AI should not crash over many turns."""
+        engine = GameEngine()
+        factions = [
+            {"name": "AI 1", "color": "#e74c3c", "player_id": None},
+            {"name": "AI 2", "color": "#3498db", "player_id": None},
+            {"name": "AI 3", "color": "#2ecc71", "player_id": None},
+        ]
+        engine.new_game(factions, map_cols=6, map_rows=5, seed=99)
+        for _ in range(30):
+            events = engine.process_turn()
+        assert engine.state.turn == 30
+
+
+# ---------------------------------------------------------------------------
+# Character Portrait tests
+# ---------------------------------------------------------------------------
+
+class TestCharacterPortraits:
+    def test_generate_portrait_svg(self):
+        from online_rpg.character_portraits import generate_portrait_svg
+        svg = generate_portrait_svg("Test Hero", role="general", command=80, force=90)
+        assert svg.startswith('<svg')
+        assert '</svg>' in svg
+        assert 'width="80"' in svg
+
+    def test_portraits_are_deterministic(self):
+        from online_rpg.character_portraits import generate_portrait_svg
+        svg1 = generate_portrait_svg("Cao Cao", role="ruler")
+        svg2 = generate_portrait_svg("Cao Cao", role="ruler")
+        assert svg1 == svg2
+
+    def test_different_names_different_portraits(self):
+        from online_rpg.character_portraits import generate_portrait_svg
+        svg1 = generate_portrait_svg("Liu Bei")
+        svg2 = generate_portrait_svg("Sun Quan")
+        assert svg1 != svg2
+
+    def test_generate_data_uri(self):
+        from online_rpg.character_portraits import generate_portrait_data_uri
+        uri = generate_portrait_data_uri("Test", role="strategist")
+        assert uri.startswith("data:image/svg+xml;base64,")
+
+    def test_all_roles_generate(self):
+        from online_rpg.character_portraits import generate_portrait_svg
+        roles = ["ruler", "general", "strategist", "governor", "diplomat", "spy", "free"]
+        for role in roles:
+            svg = generate_portrait_svg("Test " + role, role=role)
+            assert '</svg>' in svg
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

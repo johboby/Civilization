@@ -416,6 +416,17 @@ function getAdjacentMoveButtons(army, currentProvince) {
     return btns;
 }
 
+// Portrait cache
+const _portraitCache = {};
+
+function getPortraitUrl(name, role, stats) {
+    const key = `${name}_${role}`;
+    if (_portraitCache[key]) return _portraitCache[key];
+    const url = `/api/portrait/${encodeURIComponent(name)}?role=${role}&command=${stats.command}&force=${stats.force}&intelligence=${stats.intelligence}&politics=${stats.politics}&charisma=${stats.charisma}`;
+    _portraitCache[key] = url;
+    return url;
+}
+
 function updateCharacterList() {
     if (!G.state || !G.factionId) { DOM.characterList.innerHTML = ''; return; }
 
@@ -425,24 +436,40 @@ function updateCharacterList() {
     let html = '';
     chars.forEach(c => {
         const s = c.stats;
+        const portraitUrl = getPortraitUrl(c.name, c.role, s);
+        const roleColors = {ruler:'#ffd700',general:'#e74c3c',strategist:'#3498db',governor:'#2ecc71',diplomat:'#9b59b6',spy:'#555',free:'#888'};
+        const roleColor = roleColors[c.role] || '#888';
+        const totalPower = s.command + s.force + s.intelligence + s.politics + s.charisma;
         html += `
             <div class="char-card">
-                <div style="display:flex;justify-content:space-between">
-                    <span class="char-name">${c.name}</span>
-                    <span class="char-role">${c.role}</span>
-                </div>
-                <div style="font-size:11px;color:#a0a0b0">Lv ${c.level} | Age ${c.age} | Loyalty ${s.loyalty}</div>
-                <div class="char-stats">
-                    <div class="char-stat"><span>CMD</span><span>${s.command}</span></div>
-                    <div class="char-stat"><span>FOR</span><span>${s.force}</span></div>
-                    <div class="char-stat"><span>INT</span><span>${s.intelligence}</span></div>
-                    <div class="char-stat"><span>POL</span><span>${s.politics}</span></div>
-                    <div class="char-stat"><span>CHA</span><span>${s.charisma}</span></div>
+                <div style="display:flex;gap:10px;align-items:flex-start">
+                    <img src="${portraitUrl}" width="60" height="75" style="border-radius:4px;flex-shrink:0" alt="${c.name}">
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span class="char-name">${c.name}</span>
+                            <span class="char-role" style="color:${roleColor}">${c.role}</span>
+                        </div>
+                        <div style="font-size:11px;color:#8890a8;margin:2px 0">Lv ${c.level} | Age ${c.age} | Power ${totalPower}</div>
+                        <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
+                            <span style="font-size:10px;color:#8890a8">Loyalty:</span>
+                            <div class="progress-bar" style="flex:1;height:4px">
+                                <div class="progress-bar-fill ${s.loyalty > 50 ? 'green' : 'red'}" style="width:${s.loyalty}%"></div>
+                            </div>
+                            <span style="font-size:10px;color:${s.loyalty > 50 ? '#2ecc71' : '#e74c3c'}">${s.loyalty}</span>
+                        </div>
+                        <div class="char-stats">
+                            <div class="char-stat"><span>CMD</span><span>${s.command}</span></div>
+                            <div class="char-stat"><span>FOR</span><span>${s.force}</span></div>
+                            <div class="char-stat"><span>INT</span><span>${s.intelligence}</span></div>
+                            <div class="char-stat"><span>POL</span><span>${s.politics}</span></div>
+                            <div class="char-stat"><span>CHA</span><span>${s.charisma}</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
     });
-    DOM.characterList.innerHTML = html || '<div style="color:#a0a0b0;font-size:13px">No officers</div>';
+    DOM.characterList.innerHTML = html || '<div style="color:#8890a8;font-size:13px">No officers</div>';
 }
 
 function updateDiplomacy() {
