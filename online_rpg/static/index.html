@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civilization Online RPG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- ============================================================ -->
+    <!-- LOGIN SCREEN -->
+    <!-- ============================================================ -->
+    <div id="login-screen" class="screen">
+        <div class="login-bg-particles" id="particles"></div>
+        <div class="login-container">
+            <div class="login-logo">
+                <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="none" stroke="#f5c518" stroke-width="2"/><text x="30" y="36" text-anchor="middle" fill="#f5c518" font-family="Cinzel" font-size="24" font-weight="bold">C</text></svg>
+            </div>
+            <h1>Civilization Online RPG</h1>
+            <p class="subtitle">Grand Strategy Multiplayer</p>
+
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="player-name">Commander Name</label>
+                    <input type="text" id="player-name" placeholder="Enter your name" maxlength="20" autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="map-cols">Map Width</label>
+                        <input type="number" id="map-cols" value="10" min="5" max="20">
+                    </div>
+                    <div class="form-group half">
+                        <label for="map-rows">Map Height</label>
+                        <input type="number" id="map-rows" value="8" min="5" max="15">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="num-factions">Factions</label>
+                    <input type="number" id="num-factions" value="4" min="2" max="8">
+                </div>
+
+                <button id="btn-connect" class="btn btn-primary btn-lg btn-glow">Start Campaign</button>
+
+                <div class="login-divider"><span>or join online</span></div>
+
+                <div class="form-group">
+                    <label for="server-url">Server Address</label>
+                    <input type="text" id="server-url" placeholder="ws://localhost:8000">
+                </div>
+                <div class="form-group">
+                    <label for="room-id">Room ID</label>
+                    <input type="text" id="room-id" value="default" placeholder="default">
+                </div>
+                <button id="btn-join" class="btn btn-secondary btn-lg">Join Server</button>
+
+                <div id="connection-status" class="status-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- GAME SCREEN -->
+    <!-- ============================================================ -->
+    <div id="game-screen" class="screen hidden">
+        <!-- Top Bar -->
+        <header id="top-bar">
+            <div class="top-left">
+                <div id="faction-badge" class="faction-badge">
+                    <div class="faction-dot" id="faction-dot"></div>
+                    <span id="info-faction">-</span>
+                </div>
+                <div class="top-divider"></div>
+                <span id="info-turn" class="info-chip">Turn 0</span>
+                <span id="info-year" class="info-chip">190 AD</span>
+                <span id="info-season" class="info-chip season-chip">Spring</span>
+            </div>
+            <div class="top-center">
+                <div class="resource-group">
+                    <div class="resource" id="res-gold"><span class="res-icon gold-icon"></span><span class="res-val">0</span><span class="res-label">Gold</span></div>
+                    <div class="resource" id="res-food"><span class="res-icon food-icon"></span><span class="res-val">0</span><span class="res-label">Food</span></div>
+                    <div class="resource" id="res-manpower"><span class="res-icon mp-icon"></span><span class="res-val">0</span><span class="res-label">Manpower</span></div>
+                </div>
+            </div>
+            <div class="top-right">
+                <div class="stability-meter" title="Stability">
+                    <span class="stability-label">Stability</span>
+                    <div class="stability-bar"><div class="stability-fill" id="stability-fill"></div></div>
+                </div>
+                <button id="btn-end-turn" class="btn btn-accent btn-end-turn">
+                    <span>End Turn</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1l7 7-7 7M1 8h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <button id="btn-save" class="btn btn-ghost" title="Save Game">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 2h9l3 3v9H2z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 2v4h6V2M5 10h6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <div id="game-main">
+            <!-- Map -->
+            <div id="map-container">
+                <canvas id="game-map"></canvas>
+                <!-- Minimap -->
+                <div id="minimap-container">
+                    <span class="minimap-title">Overview</span>
+                    <canvas id="minimap"></canvas>
+                </div>
+                <!-- Map mode buttons -->
+                <div id="map-modes">
+                    <button class="map-mode-btn active" data-mode="political" title="Political Map">P</button>
+                    <button class="map-mode-btn" data-mode="terrain" title="Terrain Map">T</button>
+                    <button class="map-mode-btn" data-mode="economy" title="Economy Map">E</button>
+                </div>
+            </div>
+
+            <!-- Side Panel -->
+            <div id="side-panel">
+                <div class="tab-bar">
+                    <button class="tab active" data-tab="province-tab" title="Province">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                        <span>Province</span>
+                    </button>
+                    <button class="tab" data-tab="army-tab" title="Armies">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1L13 13H1z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                        <span>Army</span>
+                    </button>
+                    <button class="tab" data-tab="characters-tab" title="Officers">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="5" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 13c0-3 2-5 5-5s5 2 5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                        <span>Officers</span>
+                    </button>
+                    <button class="tab" data-tab="diplomacy-tab" title="Diplomacy">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 7h4l2-3 2 6 2-3h3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                        <span>Diplo</span>
+                    </button>
+                    <button class="tab" data-tab="tech-tab" title="Technology">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>
+                        <span>Tech</span>
+                    </button>
+                </div>
+
+                <div id="province-tab" class="tab-content active">
+                    <h3 id="province-name">Select a province</h3>
+                    <div id="province-details"></div>
+                    <div id="province-actions"></div>
+                </div>
+                <div id="army-tab" class="tab-content">
+                    <h3>Your Armies</h3>
+                    <div id="army-list"></div>
+                </div>
+                <div id="characters-tab" class="tab-content">
+                    <h3>Officers</h3>
+                    <div id="character-list"></div>
+                </div>
+                <div id="diplomacy-tab" class="tab-content">
+                    <h3>Diplomacy</h3>
+                    <div id="diplomacy-list"></div>
+                </div>
+                <div id="tech-tab" class="tab-content">
+                    <h3>Technology</h3>
+                    <div id="tech-info"></div>
+                    <div id="tech-available"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Panel -->
+        <div id="bottom-panel">
+            <div id="event-log">
+                <div class="bottom-header">
+                    <h4>Events</h4>
+                    <span class="event-count" id="event-count">0</span>
+                </div>
+                <div id="event-list"></div>
+            </div>
+            <div id="chat-panel">
+                <div class="bottom-header"><h4>Chat</h4></div>
+                <div id="chat-messages"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="chat-input" placeholder="Send a message..." maxlength="200">
+                    <button id="btn-chat-send" class="btn btn-small">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Area -->
+        <div id="notification-area"></div>
+
+        <!-- Tooltip -->
+        <div id="tooltip" class="tooltip hidden"></div>
+    </div>
+
+    <script src="/static/game.js"></script>
+</body>
+</html>

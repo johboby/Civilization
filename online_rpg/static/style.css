@@ -1,0 +1,667 @@
+/* ============================================================
+   Civilization Online RPG - Game UI Stylesheet
+   Enhanced with gradients, animations, and visual polish
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+    --bg-dark: #0d0d1a;
+    --bg-medium: #131827;
+    --bg-light: #0f3460;
+    --bg-panel: #161d33;
+    --bg-card: #1a2240;
+    --text-primary: #dcdce0;
+    --text-secondary: #8890a8;
+    --text-bright: #ffffff;
+    --accent-gold: #f5c518;
+    --accent-gold-dim: #b8940f;
+    --accent-red: #e74c3c;
+    --accent-green: #2ecc71;
+    --accent-blue: #3498db;
+    --accent-purple: #9b59b6;
+    --accent-teal: #1abc9c;
+    --border-color: #253050;
+    --border-glow: rgba(52, 152, 219, 0.3);
+    --shadow: rgba(0, 0, 0, 0.4);
+    --shadow-lg: rgba(0, 0, 0, 0.6);
+    --gradient-panel: linear-gradient(135deg, #161d33 0%, #1a2540 100%);
+    --gradient-header: linear-gradient(90deg, #0f3460 0%, #1a2540 100%);
+    --font-display: 'Cinzel', Georgia, serif;
+    --font-body: 'Inter', 'Segoe UI', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ---- Animations ---- */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 4px var(--border-glow); } 50% { box-shadow: 0 0 12px var(--border-glow); } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes goldPulse { 0%, 100% { color: var(--accent-gold); } 50% { color: #ffe066; } }
+
+.hidden { display: none !important; }
+
+/* ---- Buttons ---- */
+.btn {
+    padding: 8px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--text-bright);
+    background: linear-gradient(180deg, #1a3a6a 0%, #0f2a50 100%);
+    transition: all 0.2s ease;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    letter-spacing: 0.3px;
+}
+.btn:hover { background: linear-gradient(180deg, #2050a0 0%, #1a3a6a 100%); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+.btn:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+.btn-primary { background: linear-gradient(180deg, #3498db 0%, #2175a8 100%); border-color: #2980b9; }
+.btn-primary:hover { background: linear-gradient(180deg, #45a8eb 0%, #2980b9 100%); }
+.btn-success { background: linear-gradient(180deg, #2ecc71 0%, #25a55a 100%); border-color: #27ae60; color: #fff; }
+.btn-success:hover { background: linear-gradient(180deg, #3edd82 0%, #2ecc71 100%); }
+.btn-danger { background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%); border-color: #c0392b; }
+.btn-danger:hover { background: linear-gradient(180deg, #f05e4e 0%, #e74c3c 100%); }
+.btn-secondary { background: linear-gradient(180deg, #555 0%, #3a3a3a 100%); border-color: #555; }
+.btn-small { padding: 4px 10px; font-size: 11px; border-radius: 3px; }
+
+/* ---- Forms ---- */
+.form-group {
+    margin-bottom: 12px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    font-size: 14px;
+}
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+/* ---- Screens ---- */
+.screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+
+/* ---- Login Screen ---- */
+#login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: 
+        radial-gradient(ellipse at 20% 50%, rgba(15, 52, 96, 0.4) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(155, 89, 182, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(245, 197, 24, 0.08) 0%, transparent 40%),
+        linear-gradient(160deg, #0a0a18 0%, #131827 40%, #0d1a30 100%);
+}
+.login-container {
+    background: var(--gradient-panel);
+    padding: 48px 44px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    width: 420px;
+    text-align: center;
+    box-shadow: 0 16px 60px var(--shadow-lg), 0 0 80px rgba(15, 52, 96, 0.15);
+    animation: fadeIn 0.6s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+    opacity: 0.6;
+}
+.login-container h1 {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--accent-gold);
+    margin-bottom: 6px;
+    text-shadow: 0 2px 8px rgba(245, 197, 24, 0.2);
+    letter-spacing: 1px;
+}
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.status-text {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: color 0.3s;
+}
+
+/* ---- Lobby Screen ---- */
+.lobby-container {
+    padding: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.lobby-container h2 {
+    color: var(--accent-gold);
+    margin-bottom: 20px;
+    text-align: center;
+}
+.lobby-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+.panel {
+    background: var(--bg-panel);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.panel h3 {
+    color: var(--accent-gold);
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+.panel ul {
+    list-style: none;
+}
+.panel li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+}
+.faction-select-item {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.faction-select-item:hover { background: var(--bg-light); }
+.faction-select-item.selected { border-color: var(--accent-gold); background: var(--bg-light); }
+.faction-color-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ============================================================
+   Game Screen Layout
+   ============================================================ */
+
+#game-screen {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Top Bar ---- */
+#top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--gradient-header);
+    border-bottom: 1px solid var(--border-color);
+    height: 50px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 5;
+}
+.top-info, .top-resources, .top-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+.info-item {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.res-item {
+    font-size: 13px;
+    font-weight: bold;
+}
+#res-gold { color: var(--accent-gold); }
+#res-food { color: var(--accent-green); }
+#res-manpower { color: var(--accent-blue); }
+
+/* ---- Main Area ---- */
+#game-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ---- Map ---- */
+#map-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #0a0a1a;
+}
+#game-map {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ---- Side Panel ---- */
+#side-panel {
+    width: 340px;
+    background: var(--gradient-panel);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.2);
+    animation: slideInRight 0.4s ease-out;
+}
+.tab-bar {
+    display: flex;
+    background: var(--bg-medium);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.tab {
+    flex: 1;
+    padding: 8px 4px;
+    font-size: 11px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+.tab:hover { color: var(--text-primary); }
+.tab.active {
+    color: var(--accent-gold);
+    border-bottom-color: var(--accent-gold);
+}
+.tab-content {
+    display: none;
+    padding: 12px;
+    overflow-y: auto;
+    flex: 1;
+}
+.tab-content.active { display: block; }
+.tab-content h3 {
+    color: var(--accent-gold);
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+/* Province details */
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.detail-label { color: var(--text-secondary); }
+.detail-value { color: var(--text-bright); }
+
+.stat-bar {
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    margin-top: 2px;
+    overflow: hidden;
+}
+.stat-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+/* Character cards */
+.char-card {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-card) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.char-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent-gold);
+    opacity: 0.6;
+}
+.char-card:hover { border-color: var(--accent-gold-dim); box-shadow: 0 2px 12px rgba(245,197,24,0.1); }
+.char-card .char-name {
+    font-weight: 600;
+    color: var(--accent-gold);
+    font-size: 14px;
+    letter-spacing: 0.3px;
+}
+.char-card .char-role {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+.char-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 12px;
+    margin-top: 8px;
+    font-size: 12px;
+}
+.char-stat { display: flex; justify-content: space-between; }
+.char-stat span:last-child { font-weight: 600; color: var(--text-bright); }
+
+/* Army cards */
+.army-card {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+.army-card:hover { border-color: var(--accent-blue); }
+.army-card .army-soldiers {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--accent-red);
+}
+
+/* Diplomacy items */
+.diplo-item {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+.diplo-item .diplo-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.diplo-status.neutral { background: #555; }
+.diplo-status.ally { background: var(--accent-green); color: #000; }
+.diplo-status.war { background: var(--accent-red); }
+.diplo-status.trade { background: var(--accent-gold); color: #000; }
+.diplo-status.truce { background: var(--accent-purple); }
+.diplo-status.vassal { background: #8e44ad; }
+
+.diplo-actions {
+    margin-top: 6px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+/* Tech items */
+.tech-item {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+.tech-item:hover { border-color: var(--accent-blue); }
+.tech-item .tech-name { font-weight: bold; color: var(--accent-blue); }
+.tech-item .tech-cost { font-size: 12px; color: var(--accent-gold); }
+.tech-item .tech-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.tech-item.researched { border-color: var(--accent-green); opacity: 0.7; }
+.tech-item.researching { border-color: var(--accent-gold); }
+
+/* ---- Bottom Panel ---- */
+#bottom-panel {
+    display: flex;
+    height: 160px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-medium);
+    flex-shrink: 0;
+}
+
+#event-log, #chat-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+}
+#event-log { border-right: 1px solid var(--border-color); }
+
+#event-log h4, #chat-panel h4 {
+    font-size: 12px;
+    color: var(--accent-gold);
+    margin-bottom: 6px;
+    flex-shrink: 0;
+}
+
+#event-list, #chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.6;
+}
+#event-list .event-entry {
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.event-turn { color: var(--accent-gold); font-weight: bold; }
+.event-type-battle { color: var(--accent-red); }
+.event-type-tech_researched { color: var(--accent-blue); }
+.event-type-province_captured { color: var(--accent-green); }
+
+.chat-msg { padding: 2px 0; }
+.chat-msg .chat-name { color: var(--accent-gold); font-weight: bold; }
+.chat-msg .chat-text { color: var(--text-primary); }
+
+.chat-input-row {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+.chat-input-row input {
+    flex: 1;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* ---- Scrollbars ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+/* ---- Province action buttons ---- */
+.action-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+/* ---- Tooltip ---- */
+.tooltip {
+    position: absolute;
+    background: linear-gradient(135deg, rgba(13,13,26,0.96), rgba(22,29,51,0.96));
+    border: 1px solid var(--accent-gold-dim);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 260px;
+    box-shadow: 0 6px 20px var(--shadow-lg);
+    animation: fadeIn 0.15s ease-out;
+}
+.tooltip .tooltip-title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--accent-gold);
+    margin-bottom: 4px;
+}
+.tooltip .tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 1px 0;
+    font-size: 11px;
+}
+.tooltip .tooltip-row .label { color: var(--text-secondary); }
+.tooltip .tooltip-row .value { color: var(--text-bright); font-weight: 500; }
+
+/* ---- Minimap ---- */
+#minimap-container {
+    position: absolute;
+    bottom: 176px;
+    left: 12px;
+    width: 220px;
+    height: 180px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(10,10,26,0.85);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    z-index: 5;
+}
+#minimap-container canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+#minimap-container .minimap-title {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    font-size: 10px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    pointer-events: none;
+}
+
+/* ---- Notifications ---- */
+#notification-area {
+    position: fixed;
+    top: 58px;
+    right: 350px;
+    width: 320px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    pointer-events: none;
+}
+.notification {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    animation: slideInRight 0.3s ease-out;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.3s;
+}
+.notification.fade-out { opacity: 0; }
+.notification-icon { font-size: 16px; }
+.notification.info { background: linear-gradient(135deg, rgba(22,33,62,0.95), rgba(26,42,64,0.95)); border-left: 3px solid var(--accent-blue); }
+.notification.success { background: linear-gradient(135deg, rgba(20,50,30,0.95), rgba(26,42,64,0.95)); border-left: 3px solid var(--accent-green); }
+.notification.warning { background: linear-gradient(135deg, rgba(50,40,15,0.95), rgba(42,35,20,0.95)); border-left: 3px solid var(--accent-gold); }
+.notification.error { background: linear-gradient(135deg, rgba(50,20,20,0.95), rgba(42,20,20,0.95)); border-left: 3px solid var(--accent-red); }
+
+/* ---- Faction Color Bar ---- */
+.faction-bar {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 4px;
+}
+
+/* ---- Resource Icons ---- */
+.res-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+}
+.res-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+}
+.res-icon.gold { background: rgba(245,197,24,0.2); color: var(--accent-gold); }
+.res-icon.food { background: rgba(46,204,113,0.2); color: var(--accent-green); }
+.res-icon.manpower { background: rgba(52,152,219,0.2); color: var(--accent-blue); }
+
+/* ---- Progress Bars ---- */
+.progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 4px 0;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+}
+.progress-bar-fill.gold { background: linear-gradient(90deg, var(--accent-gold-dim), var(--accent-gold)); }
+.progress-bar-fill.red { background: linear-gradient(90deg, #c0392b, var(--accent-red)); }
+.progress-bar-fill.green { background: linear-gradient(90deg, #27ae60, var(--accent-green)); }
