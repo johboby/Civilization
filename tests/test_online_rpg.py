@@ -520,5 +520,170 @@ class TestCharacterPortraits:
             assert '</svg>' in svg
 
 
+# ---------------------------------------------------------------------------
+# Advanced Systems tests
+# ---------------------------------------------------------------------------
+
+class TestTradeSystem:
+    def test_generate_trade_goods(self):
+        from online_rpg.advanced_systems import TradeSystem, TradeGoodType
+        from online_rpg.map_generator import generate_map
+        ts = TradeSystem()
+        provinces = generate_map(cols=5, rows=4, seed=42)
+        goods = ts.generate_trade_goods(provinces)
+        assert len(goods) == len(provinces)
+        for good in goods.values():
+            assert isinstance(good, TradeGoodType)
+
+    def test_create_route(self):
+        from online_rpg.advanced_systems import TradeSystem, TradeGoodType
+        ts = TradeSystem()
+        route = ts.create_route("p1", "p2", TradeGoodType.SILK)
+        assert route.trade_good == TradeGoodType.SILK
+        assert route.value > 0
+        assert route.id in ts.routes
+
+
+class TestEspionageSystem:
+    def test_start_mission(self):
+        from online_rpg.advanced_systems import EspionageSystem, SpyMission
+        es = EspionageSystem()
+        spy = Character(name="Spy Test", role=CharacterRole.SPY,
+                       stats=CharacterStats(intelligence=80))
+        op = es.start_mission(spy, SpyMission.SCOUT, "p1", "f2")
+        assert op.mission == SpyMission.SCOUT
+        assert op.success_chance > 0.4
+        assert len(es.operations) == 1
+
+    def test_process_espionage(self):
+        from online_rpg.advanced_systems import EspionageSystem, SpyMission
+        es = EspionageSystem()
+        spy = Character(name="Spy", role=CharacterRole.SPY,
+                       stats=CharacterStats(intelligence=90), faction_id="f1")
+        spy_id = spy.id
+        op = es.start_mission(spy, SpyMission.SCOUT, "p1", "f2")
+        op.turns_remaining = 1  # Will complete next process
+
+        province = Province(id="p1", name="TestCity", owner_faction_id="f2")
+        events = es.process_espionage(
+            {spy_id: spy}, {"p1": province}, {"f1": Faction(id="f1"), "f2": Faction(id="f2")}
+        )
+        assert isinstance(events, list)
+
+
+class TestTacticalBattle:
+    def test_resolve_battle(self):
+        from online_rpg.advanced_systems import TacticalBattleSystem, Formation
+        tbs = TacticalBattleSystem()
+        attacker = Army(faction_id="f1", soldiers=2000, infantry=1200, cavalry=500, archers=300)
+        defender = Army(faction_id="f2", soldiers=1500, infantry=900, cavalry=400, archers=200)
+        province = Province(name="Battlefield", terrain=TerrainType.PLAINS)
+
+        result = tbs.resolve_battle(attacker, defender, province)
+        assert result.winner in ("attacker", "defender")
+        assert result.attacker_losses > 0
+        assert result.defender_losses > 0
+
+    def test_formation_affects_result(self):
+        from online_rpg.advanced_systems import TacticalBattleSystem, Formation
+        tbs = TacticalBattleSystem()
+        province = Province(name="Field", terrain=TerrainType.PLAINS)
+
+        # Run many battles to check statistical effect
+        aggressive_wins = 0
+        for _ in range(50):
+            a = Army(faction_id="f1", soldiers=1000, infantry=600, cavalry=250, archers=150)
+            d = Army(faction_id="f2", soldiers=1000, infantry=600, cavalry=250, archers=150)
+            result = tbs.resolve_battle(a, d, province,
+                att_formation=Formation.AGGRESSIVE, def_formation=Formation.STANDARD)
+            if result.winner == "attacker":
+                aggressive_wins += 1
+        # Aggressive formation should win more than 50% against standard
+        assert aggressive_wins > 15  # At least some advantage
+
+
+class TestVictorySystem:
+    def test_no_victory_initially(self):
+        from online_rpg.advanced_systems import VictorySystem
+        vs = VictorySystem()
+        factions = {"f1": Faction(id="f1", gold=100), "f2": Faction(id="f2", gold=100)}
+        provinces = {
+            "p1": Province(id="p1", owner_faction_id="f1"),
+            "p2": Province(id="p2", owner_faction_id="f2"),
+        }
+        result = vs.check_victory(factions, provinces)
+        assert result is None
+
+    def test_economic_victory(self):
+        from online_rpg.advanced_systems import VictorySystem, VictoryType
+        vs = VictorySystem()
+        factions = {"f1": Faction(id="f1", gold=15000), "f2": Faction(id="f2", gold=100)}
+        # Both factions have provinces so domination doesn't trigger first
+        provinces = {
+            "p1": Province(id="p1", owner_faction_id="f1"),
+            "p2": Province(id="p2", owner_faction_id="f2"),
+            "p3": Province(id="p3", owner_faction_id="f2"),
+        }
+        result = vs.check_victory(factions, provinces)
+        assert result is not None
+        assert result[0] == "f1"
+        assert result[1] == VictoryType.ECONOMIC
+
+    def test_domination_victory(self):
+        from online_rpg.advanced_systems import VictorySystem, VictoryType
+        vs = VictorySystem()
+        factions = {"f1": Faction(id="f1"), "f2": Faction(id="f2")}
+        # f1 owns 8 out of 10 provinces (80% > 60% threshold)
+        provinces = {}
+        for i in range(10):
+            owner = "f1" if i < 8 else "f2"
+            provinces[f"p{i}"] = Province(id=f"p{i}", owner_faction_id=owner)
+        result = vs.check_victory(factions, provinces)
+        assert result is not None
+        assert result[1] == VictoryType.DOMINATION
+
+
+class TestScenarios:
+    def test_list_scenarios(self):
+        from online_rpg.advanced_systems import list_scenarios
+        scenarios = list_scenarios()
+        assert len(scenarios) >= 2
+        names = [s["id"] for s in scenarios]
+        assert "three_kingdoms" in names
+        assert "warring_states" in names
+
+    def test_get_scenario(self):
+        from online_rpg.advanced_systems import get_scenario
+        tk = get_scenario("three_kingdoms")
+        assert tk is not None
+        assert tk["year"] == 190
+        assert len(tk["factions"]) == 5
+
+    def test_warring_states(self):
+        from online_rpg.advanced_systems import get_scenario
+        ws = get_scenario("warring_states")
+        assert ws is not None
+        assert len(ws["factions"]) == 7
+
+
+class TestCultureReligion:
+    def test_initialize(self):
+        from online_rpg.advanced_systems import CultureReligionSystem
+        crs = CultureReligionSystem()
+        provinces = {"p1": Province(id="p1"), "p2": Province(id="p2")}
+        crs.initialize(provinces)
+        assert "p1" in crs.province_cultures
+        assert "p1" in crs.province_religions
+
+    def test_get_info(self):
+        from online_rpg.advanced_systems import CultureReligionSystem
+        crs = CultureReligionSystem()
+        crs.province_cultures["p1"] = "Han"
+        crs.province_religions["p1"] = "Confucianism"
+        info = crs.get_province_info("p1")
+        assert info["culture"] == "Han"
+        assert info["religion"] == "Confucianism"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

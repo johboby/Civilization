@@ -30,6 +30,7 @@ from .game_engine import GameEngine, GameState
 from .models import DiplomacyStatus
 from .tech_tree import get_available_techs, build_tech_tree
 from .character_portraits import generate_portrait_svg
+from .advanced_systems import list_scenarios, get_scenario
 
 logger = logging.getLogger("rpg_server")
 logging.basicConfig(level=logging.INFO)
@@ -409,6 +410,17 @@ def create_app() -> FastAPI:
                 "data_uri": f"data:image/svg+xml;base64,{encoded}",
             }
         return {"portraits": portraits}
+
+    @app.get("/api/scenarios")
+    async def get_scenarios():
+        return {"scenarios": list_scenarios()}
+
+    @app.get("/api/scenarios/{scenario_id}")
+    async def get_scenario_detail(scenario_id: str):
+        scenario = get_scenario(scenario_id)
+        if not scenario:
+            return {"ok": False, "error": "Scenario not found"}
+        return {"ok": True, "scenario": scenario}
 
     @app.get("/api/saves")
     async def list_saves():
